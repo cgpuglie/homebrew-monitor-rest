@@ -12,7 +12,7 @@ const {
 	serviceEnv='Test',
 	serviceColor=false,
 	serviceBindIp='0.0.0.0',
-	servicePort=8081,
+	servicePort=8082,
 	serviceRoot=`/${name}`,
 	serviceSecret='J50NW3bT0k3n',
 	tokenLifetimeH=1,
