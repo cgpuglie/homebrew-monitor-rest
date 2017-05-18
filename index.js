@@ -9,7 +9,7 @@ const { json: jsonParser } = require('body-parser-json')
 // load service config
 const {
 	name='service',
-	serviceEnv='Test',
+	serviceEnv='Production',
 	serviceColor=false,
 	serviceBindIp='0.0.0.0',
 	servicePort=8082,
@@ -23,7 +23,6 @@ const {
 
 // load ENV
 const {
-	SERVICE_ENV:environment=serviceEnv,
 	SERVICE_BIND_IP:ip=serviceBindIp,
 	SERVICE_PORT:port=servicePort,
 	SERVICE_ROOT:root=serviceRoot,
@@ -31,7 +30,9 @@ const {
 	
 	SERVICE_SECRET:secret=serviceSecret,
 	TOKEN_LIFETIME_H:lifetime=tokenLifetimeH,
-	
+
+	NODE_ENV:environment=serviceEnv,
+
 	BREW_MASTER:master='admin',
 	BREW_MASTER_PASS:pass='password'
 } = process.env

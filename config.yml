@@ -1,4 +1,4 @@
-name: auth
-serviceColor: green
+name: rest
+serviceColor: blue
 morgan:
   format: ':method :status :url - :response-time ms'
