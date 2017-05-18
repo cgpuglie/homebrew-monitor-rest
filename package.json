@@ -19,8 +19,9 @@
   },
   "devDependencies": {
     "mocha": "^3.3.0",
-    "should": "^11.2.1",
+    "nock": "^9.0.13",
     "request": "^2.81.0",
-    "request-promise": "^4.2.0"
+    "request-promise": "^4.2.0",
+    "should": "^11.2.1"
   }
 }

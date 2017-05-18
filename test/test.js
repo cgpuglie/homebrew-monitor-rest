@@ -1,10 +1,11 @@
 const should = require('should')
 const rp = require('request-promise')
+const nock = require('nock')
 // set the environment to 'Test' to silence logs
 process.env['NODE_ENV'] = 'Test'
 
 // start app server
-const { service, config: {port, root, secret, master: username, pass: password} } = require('../index')
+const { service, config: {port, root, authRoute} } = require('../index')
 const base = `http://localhost:${port}${root}`
 
 // state object enclosing properties to override test closures
@@ -46,5 +47,47 @@ describe('Health', function describeHealth() {
     .catch(res => res.statusCode)
     .should.eventually.equal(200)
     
+  })
+})
+
+describe('Authentication', function describeAuth() {
+  it('should permit requests with a valid jwt', function validToken () {
+    // mock the api of the auth microservice
+    nock(base)
+      .get(`/${authRoute}/decode`)
+      .reply(200, {
+        username: "AUser"
+      })
+
+    return rp({
+      uri: `${base}/aTestRoute`, // TODO: create a route to use
+      headers: {
+        auth: 'Bearer PretendRealToken'
+      },
+      resolveWithFullResponse: true
+    })
+    .then(res => res.statusCode)
+    .catch(res => res.statusCode)
+    .should.eventually.be.below(300)
+  })
+
+  it('should reject requests with an invalid jwt', function validToken () {
+    // mock the api of the auth microservice
+    nock(base)
+      .get(`/${authRoute}/decode`)
+      .reply(401, {
+        message: 'Invalid credentials'
+      })
+
+    return rp({
+      uri: `${base}/aTestRoute`, // TODO: create a route to use
+      headers: {
+        auth: 'Bearer PretendBadToken'
+      },
+      resolveWithFullResponse: true
+    })
+    .then(res => res.statusCode)
+    .catch(res => res.statusCode)
+    .should.eventually.equal(401)
   })
 })
