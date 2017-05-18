@@ -1,0 +1,11 @@
+FROM node:6.2.0
+
+RUN mkdir -p /usr/src/homebrew-monitor-rest
+WORKDIR /usr/src/homebrew-monitor-rest
+
+# Install app dependencies
+COPY . /usr/src/homebrew-monitor-rest
+RUN npm install
+
+# run
+CMD ["npm", "test"]
