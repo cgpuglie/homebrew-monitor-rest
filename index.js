@@ -14,8 +14,7 @@ const {
 	serviceBindIp='0.0.0.0',
 	servicePort=8082,
 	serviceRoot=`/${name}`,
-	serviceSecret='J50NW3bT0k3n',
-	tokenLifetimeH=1,
+	authRoute='/auth',
 	morgan: {
 		format
 	}
@@ -27,14 +26,10 @@ const {
 	SERVICE_PORT:port=servicePort,
 	SERVICE_ROOT:root=serviceRoot,
 	SERVICE_COLOR:color=serviceColor,
-	
-	SERVICE_SECRET:secret=serviceSecret,
-	TOKEN_LIFETIME_H:lifetime=tokenLifetimeH,
 
-	NODE_ENV:environment=serviceEnv,
+	AUTH_ROUTE=authRoute,
 
-	BREW_MASTER:master='admin',
-	BREW_MASTER_PASS:pass='password'
+	NODE_ENV:environment=serviceEnv
 } = process.env
 
 // Do we log?
@@ -53,6 +48,9 @@ silent || app.use(morgan(`${ !color ? name : chalk[color](name)} > ${format}`))
 
 // use common middlewares
 app.use(middleware)
+
+
+
 // register error handler
 app.use(errorHandler)
 
@@ -71,6 +69,6 @@ module.exports = {
     })
   }),
 	// export parsed config for use in tests
-	config: { name, format, ip, port, root, color, master, pass, secret, lifetime }
+	config: { name, format, ip, port, root, color, authRoute, }
 }
 
