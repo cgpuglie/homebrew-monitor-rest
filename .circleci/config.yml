@@ -1,10 +1,11 @@
 version: 2
 jobs:
   build:
-    only:
-      - master
-      - publish
-    working_directory: /app/homebrew-monitor-rest
+    branches:
+      only:
+        - master
+        - publish
+    working_directory: /app/homebrew-monitor
     docker:
       - image: node:7.10.0
     steps:
@@ -20,26 +21,46 @@ jobs:
             mv /tmp/docker/* /usr/bin
       - run: 
           name: Build Test Image
-          command: docker build -t codemeister/homebrew-monitor-rest-test -f ./Dockerfile.test .
+          command: docker build -t "${DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}-test" -f ./Dockerfile.test .
       - run:
           name: Run Test Image
-          command: docker run -it codemeister/homebrew-monitor-rest-test
+          command: docker run -it "${DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}-test"
+      - run:
+          name: Install JQ
+          command: |
+              wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -O /usr/bin/jq;
+              chmod 755 /usr/bin/jq;
       - run:
           name: Log into Docker Hub
           command: |
-            if [ "${CIRCLE_BRANCH}" == "publish" ]; then
+            currentVersion="$(echo "$(cat package.json)" | jq -jr ".version")"
+            exists="$(echo "$(curl -s "https://registry.hub.docker.com/v2/repositories/${DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/tags/")" | jq -jr ".results[].name == \"${currentVersion}\"" | grep -c "true")" || true
+            echo "branch=${CIRCLE_BRANCH} version=${currentVersion} exists=${exists}"
+            if [ "${CIRCLE_BRANCH}" == "publish" ] && [ "$exists" == "0" ]; then
               docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+            else
+              echo "Skipped"
             fi
       - run:
           name: Build Production Image
           command: |
-            if [ "${CIRCLE_BRANCH}" == "publish" ]; then
-              docker build -t codemeister/homebrew-monitor-rest -f ./Dockerfile.production .
+            currentVersion="$(echo "$(cat package.json)" | jq -jr ".version")"
+            exists="$(echo "$(curl -s "https://registry.hub.docker.com/v2/repositories/${DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/tags/")" | jq -jr ".results[].name == \"${currentVersion}\"" | grep -c "true")" || true
+            echo "branch=${CIRCLE_BRANCH} version=${currentVersion} exists=${exists}"
+            if [ "${CIRCLE_BRANCH}" == "publish" ] && [ "$exists" == "0" ]; then
+              docker build -t "${DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}:${currentVersion}" -f ./Dockerfile.production .
+            else
+              echo "Skipped"
             fi
-      - run:
+      - deploy:
           name: Publish Production Image
           command: |
-            if [ "${CIRCLE_BRANCH}" == "publish" ]; then
-              docker push codemeister/homebrew-monitor-rest
+            currentVersion="$(echo "$(cat package.json)" | jq -jr ".version")"
+            exists="$(echo "$(curl -s "https://registry.hub.docker.com/v2/repositories/${DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}/tags/")" | jq -jr ".results[].name == \"${currentVersion}\"" | grep -c "true")" || true
+            echo "branch=${CIRCLE_BRANCH} version=${currentVersion} exists=${exists}"
+            if [ "${CIRCLE_BRANCH}" == "publish" ] && [ "$exists" == "0" ]; then
+              docker push "${DOCKER_USERNAME}/${CIRCLE_PROJECT_REPONAME}:${currentVersion}"
+            else
+              echo "Skipped"
             fi
       
