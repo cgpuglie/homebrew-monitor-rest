@@ -14,7 +14,11 @@ const {
 	serviceBindIp='0.0.0.0',
 	servicePort=8082,
 	serviceRoot=`/${name}`,
-	authRoute='/auth',
+	
+	authServiceRoot='/auth',
+	authServiceHost=serviceBindIp,
+	authServicePort=servicePort,
+	
 	morgan: {
 		format
 	}
@@ -27,16 +31,23 @@ const {
 	SERVICE_ROOT:root=serviceRoot,
 	SERVICE_COLOR:color=serviceColor,
 
-	AUTH_ROUTE=authRoute,
+	AUTH_ROUTE:authRoot=authServiceRoot,
+	AUTH_HOST:authHost=authServiceHost,
+	AUTH_PORT:authPort=authServicePort,
 
 	NODE_ENV:environment=serviceEnv
 } = process.env
 
+// Create endpoint for auth service
+const authEndpoint = `http://${authHost}:${authPort}${authRoot}`
 // Do we log?
 const silent = (environment === 'Test')
 
 // TODO: move this to module
 const { middleware, errorHandler } = require('homebrew-monitor-common')({name,color,environment})
+const {
+	temperature
+} = require('./routes')
 const base = express()
 const app = express()
 
@@ -46,10 +57,11 @@ app.use(jsonParser())
 // use morgan unless testing
 silent || app.use(morgan(`${ !color ? name : chalk[color](name)} > ${format}`))
 
+// register REST routes
+app.use('/temperature', temperature)
+
 // use common middlewares
 app.use(middleware)
-
-
 
 // register error handler
 app.use(errorHandler)
@@ -69,6 +81,6 @@ module.exports = {
     })
   }),
 	// export parsed config for use in tests
-	config: { name, format, ip, port, root, color, authRoute, }
+	config: { name, format, ip, port, root, color, authEndpoint }
 }
 
