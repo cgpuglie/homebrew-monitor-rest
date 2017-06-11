@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "node index.js"
+    "start": "node index.js",
+    "docker-build-test": "docker build -t homebrew-monitor-rest-test -f Dockerfile.test .",
+    "docker-run-test": "docker run -it --rm homebrew-monitor-rest-test",
+    "docker-build": "docker build -t homebrew-monitor-rest -f Dockerfile.production .",
+    "docker-run": "docker run -it --rm homebrew-monitor-rest"
   },
   "author": "",
   "license": "ISC",
@@ -19,8 +23,9 @@
   },
   "devDependencies": {
     "mocha": "^3.3.0",
-    "should": "^11.2.1",
+    "nock": "^9.0.13",
     "request": "^2.81.0",
-    "request-promise": "^4.2.0"
+    "request-promise": "^4.2.0",
+    "should": "^11.2.1"
   }
 }

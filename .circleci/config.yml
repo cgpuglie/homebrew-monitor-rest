@@ -5,7 +5,7 @@ jobs:
       only:
         - master
         - publish
-    working_directory: /app/homebrew-monitor
+    working_directory: /app/homebrew-monitor-rest
     docker:
       - image: node:7.10.0
     steps:

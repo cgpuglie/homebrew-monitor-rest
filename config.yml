@@ -1,4 +1,6 @@
-name: auth
-serviceColor: green
+name: rest
+serviceColor: blue
+authServiceHost: localhost
+authServicePort: 8081
 morgan:
   format: ':method :status :url - :response-time ms'
