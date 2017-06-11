@@ -43,8 +43,13 @@ const authEndpoint = `http://${authHost}:${authPort}${authRoot}`
 // Do we log?
 const silent = (environment === 'Test')
 
-// TODO: move this to module
-const { middleware, errorHandler } = require('homebrew-monitor-common')({name,color,environment})
+const { 
+	notFoundHandler,
+  errorForwardHandler,
+  errorHandler,
+  authHandler,
+  healthHandler 
+} = require('homebrew-monitor-common')({name,color,environment, authEndpoint})
 const {
 	temperature
 } = require('./routes')
@@ -57,13 +62,18 @@ app.use(jsonParser())
 // use morgan unless testing
 silent || app.use(morgan(`${ !color ? name : chalk[color](name)} > ${format}`))
 
+app.use('/health', healthHandler)
+
+// register AUTH middleware
+app.use(authHandler)
+
+/* -- Begin Authenticated routes */
 // register REST routes
 app.use('/temperature', temperature)
 
-// use common middlewares
-app.use(middleware)
-
-// register error handler
+// use common middlewares for error handling
+app.use(notFoundHandler)
+app.use(errorForwardHandler)
 app.use(errorHandler)
 
 // set base route
