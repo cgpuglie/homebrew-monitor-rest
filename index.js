@@ -31,9 +31,9 @@ const {
 	SERVICE_ROOT:root=serviceRoot,
 	SERVICE_COLOR:color=serviceColor,
 
-	AUTH_ROUTE:authRoot=authServiceRoot,
-	AUTH_HOST:authHost=authServiceHost,
-	AUTH_PORT:authPort=authServicePort,
+	AUTH_SERVICE_ROUTE:authRoot=authServiceRoot,
+	AUTH_SERVICE_HOST:authHost=authServiceHost,
+	AUTH_SERVICE_PORT:authPort=authServicePort,
 
 	NODE_ENV:environment=serviceEnv
 } = process.env
