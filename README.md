@@ -4,7 +4,7 @@ Rest API microservice for Homebrew Monitor
 
 ### Development
 
-This service is developed primarily with TDD, using Mocha tests and Nock to simulate interactions with other services. This can be done using Docker or running locally with node.
+This service is developed primarily with TDD, using Mocha tests and Nock to simulate interactions with other services. This can be done using Docker or by running locally with node.
 
 Build and run the docker test image
 ```bash
@@ -12,9 +12,9 @@ $ npm run docker-build-test;
 $ npm run docker-run-test;
 ```
 
-The service runs alongside various other services. The deployment information is a part of [the parent repo](https://github.com/cgpuglie/homebrew-monitor).
+The service runs alongside various other services. The deployment information and interaction between services is a part of [the parent repo](https://github.com/cgpuglie/homebrew-monitor).
 
-For development of dependencies like homebrew-monitor-common, you can mount dependencies as volumes as follows:
+For development of dependencies like homebrew-monitor-common, you can mount dependencies into volumes as follows:
 
 ```bash
 docker run \
